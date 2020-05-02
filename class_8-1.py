@@ -20,6 +20,15 @@ class Block(pygame.sprite.Sprite):
         self.image = pygame.Surface([width,height])
         self.image.fill(color)
         self.rect = self.image.get_rect()
+        
+class Ball(pygame.sprite.Sprite):
+    def __init__(self, speed, x, y, r, color):
+        super().__init__()
+        self.image = pygame.Surface([r*2, r*2])
+        pygame.draw.circle(self.image, color, (r,r), r, 0)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
 # 初始化pygame
 pygame.init()
@@ -40,25 +49,29 @@ allSprits = pygame.sprite.Group()
 blocks = pygame.sprite.Group()
     
 for i in range(10):
+    for j in range(5):
         w = size[0]//10
-        if i % 3 == 0:
+        if (i+j) % 3 == 0:
             color = RED
-        elif i % 3 == 1:
+        elif (i+j) % 3 == 1:
             color = WHITE
-        elif i % 3 == 2:
+        elif (i+j) % 3 == 2:
             color = BLUE
         block = Block(color, w, 20)
-        block.rect.x = i * 70 
-        block.rect.y = 0
-
-    
+        block.rect.x = i*70 
+        block.rect.y = j*20
+        
         blocks.add(block)
         allSprits.add(block)
-    
+
+
 player = Block(WHITE, 50, 50)
 allSprits.add(player)
 
 score = 0
+
+ball = Ball(0, 300, 300, 30, WHITE)
+allSprits.add(ball)
 # -------- 主要的程式迴圈 -----------
 while not done:
     # --- 事件迴圈 event loop
