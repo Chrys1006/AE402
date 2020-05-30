@@ -28,11 +28,19 @@ done = False
 # 創造一個clock控制畫面更新速度
 clock = pygame.time.Clock()
 
-snake = Snake(5)
+snake = Snake(5, size)
 g = pygame.sprite.Group()
-for i in range(10):
-    food = Food(WHITE, 300, 300)
+
+def addFood():
+    x = random.randrange(size[0])
+    y = random.randrange(size[1])
+    x -= x % 20
+    y -= y % 20
+    food = Food(WHITE, x, y)
     g.add(food)
+for _ in range(10):
+    addFood()
+
 # -------- 主要的程式迴圈 -----------
 while not done:
     # --- 事件迴圈 event loop
@@ -44,6 +52,13 @@ while not done:
     pressed = pygame.key.get_pressed()
     snake.move(pressed)
     
+    if snake.isOutOfBound() or snake.collideSelf():
+        done = True
+        
+    if len(g) < 10:
+        addFood()
+    
+    snake.collideSelf()
     snake.eat(g)
 
     #eatFood = pygame.sprite.groupcollide(snake.group, g, False, True)

@@ -26,13 +26,14 @@ class SnakeBody(pygame.sprite.Sprite):
         self.rect.y = y
         
 class Snake():
-    def __init__(self, length):
+    def __init__(self, length, windowSize):
         self.group = pygame.sprite.Group()
         self.queue = []
         self.x = 0
         self.y = 0
         self.dir = 0
         self.eatFood = False
+        self.windowSize = windowSize
         
         for i in range(length):
             self.x += SnakeBody.SIZE
@@ -40,9 +41,12 @@ class Snake():
             
             self.group.add(body)
             self.queue.append(body)
+            
     # 移動蛇
     def move(self, pressed=None):
         self.changeDir(pressed)
+        
+        self.isOutOfBound()
         
         if self.dir == 0:
             self.x += SnakeBody.SIZE
@@ -62,6 +66,19 @@ class Snake():
         else:
             tail = self.queue.pop(0)
             self.group.remove(tail)
+    
+    
+    def isOutOfBound(self):
+        if self.x <0 :
+            return True
+        if self.x > self.windowSize[0] :
+            return True  
+        if self.y <0 :
+            return True
+        if self.y >self.windowSize[1] :
+            return True
+        
+        return False
         
     # 改變方向
     def changeDir(self, pressed):
@@ -75,15 +92,19 @@ class Snake():
             self.dir = 1
         elif pressed[pygame.K_RIGHT]:
             self.dir = 0
-            
-        
-        
-
+    
+    
     def eat(self, foodGroup):
         eatFood = pygame.sprite.groupcollide(self.group, foodGroup, False, True)
         if eatFood:
             self.eatFood += len(list(eatFood.values())[0])
-    
+            
+    def collideSelf(self):
+        tmp = pygame.sprite.Group(self.queue[0:-1])    
+        hits = pygame.sprite.spritecollide(self.queue[-1], tmp, False)
+        if hits:
+            print("碰到了")
+            
 class Food(pygame.sprite.Sprite):
     SIZE = 20
     def __init__(self, color, x, y):
