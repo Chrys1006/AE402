@@ -4,18 +4,20 @@
 """
 # 匯入pygame模組
 import pygame
-from snake import Snake, Food
-import random
+
 # 定義一些會用到的顏色
 # 常數使用大寫
 BLACK    = (   0,   0,   0)
 WHITE    = ( 255, 255, 255)
 GREEN    = (   0, 255,   0)
 RED      = ( 255,   0,   0)
+BLUE     = (   0,   0, 255)
 
 # 初始化pygame
 pygame.init()
 
+x = 350
+y = 250
 # 創造一個pygame視窗並設定大小及標題
 size = (700, 500)
 screen = pygame.display.set_mode(size)
@@ -28,19 +30,6 @@ done = False
 # 創造一個clock控制畫面更新速度
 clock = pygame.time.Clock()
 
-snake = Snake(5, size)
-g = pygame.sprite.Group()
-
-def addFood():
-    x = random.randrange(size[0])
-    y = random.randrange(size[1])
-    x -= x % 20
-    y -= y % 20
-    food = Food(WHITE, x, y)
-    g.add(food)
-for _ in range(10):
-    addFood()
-
 # -------- 主要的程式迴圈 -----------
 while not done:
     # --- 事件迴圈 event loop
@@ -49,38 +38,31 @@ while not done:
             done = True # 將done變數設為True-->while迴圈將會結束
 
     # --- 程式的運算與邏輯
-    pressed = pygame.key.get_pressed()
-    snake.move(pressed)
     
-    if snake.isOutOfBound() or snake.collideSelf():
-        done = True
-        
-    if len(g) < 10:
-        addFood()
-    
-    snake.collideSelf()
-    snake.eat(g)
 
-    #eatFood = pygame.sprite.groupcollide(snake.group, g, False, True)
-    #if eatFood:
-    #    snake.append(len(eatFood.values()))
-    
     # --- 繪圖的程式碼
     #       先將畫面塗滿底色(將原有畫面清掉)
     #       繪圖的程式要寫在這行後面，不然會被這行清掉
     screen.fill(BLACK)
+    
+    pygame.draw.circle(screen, (130,255,210), (x, y), 50)
+   
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_a]:
+        x -= 1
+    if keys[pygame.K_d]:
+        x += 1
+    if keys[pygame.K_s]:
+        y += 1
+    if keys[pygame.K_w]:
+        y -= 1
 
-    snake.group.draw(screen)
-    g.draw(screen)
-#    sprites.draw(screen)
     # --- 更新畫面
     pygame.display.flip()
 
     # --- 每秒鐘60個frame
-    clock.tick(5)
+    clock.tick(60)
 
 # 關閉式窗並離開程式
 pygame.quit()
-exit()
-
 
